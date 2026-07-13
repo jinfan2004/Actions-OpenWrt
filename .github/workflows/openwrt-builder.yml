@@ -22,16 +22,20 @@ on:
   workflow_dispatch:
 
 env:
+  # 编译源码仓库
   REPO_URL: https://github.com/hanwckf/immortalwrt-mt798x
+  # 源码分支
   REPO_BRANCH: openwrt-21.02
   FEEDS_CONF: feeds.conf.default
+  # 编译配置文件
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  UPLOAD_RELEASE: true
-  # 新增SSH调试开关
+  # 编译完成自动打Release发布，需要令牌否则报错
+  UPLOAD_RELEASE: false
+  # SSH调试开关
   SSH_DEBUG: true
   TZ: Asia/Shanghai
 
