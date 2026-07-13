@@ -12,6 +12,11 @@
 
 name: OpenWrt Builder
 
+# 新增权限块，解决403核心
+permissions:
+  contents: write
+  packages: write
+
 on:
   repository_dispatch:
   workflow_dispatch:
