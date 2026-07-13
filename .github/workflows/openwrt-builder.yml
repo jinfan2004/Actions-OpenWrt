@@ -70,13 +70,7 @@ jobs:
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
-    
-    # ========== 新增SSH远程连接步骤 ==========
-    - name: SSH Interactive Debug
-      if: env.SSH_DEBUG == true
-      uses: mxschmitt/action-tmate@v3
-      timeout-minutes: 30
-    
+
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
 
@@ -90,6 +84,13 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
+
+    # ========== 新增SSH远程连接步骤 ==========
+    - name: SSH Interactive Debug
+      uses: mxschmitt/action-tmate@v3
+      if: env.SSH_DEBUG == 'true'
+      timeout-minutes: 30
+    # ========== 新增SSH远程连接步骤 ==========
 
     - name: Download package
       id: package
