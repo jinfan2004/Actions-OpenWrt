@@ -12,11 +12,6 @@
 
 name: OpenWrt Builder
 
-# 新增权限块，解决403核心
-permissions:
-  contents: write
-  packages: write
-
 on:
   repository_dispatch:
   workflow_dispatch:
@@ -35,8 +30,8 @@ env:
   UPLOAD_FIRMWARE: true
   # 编译完成自动打Release发布，需要令牌否则报错
   UPLOAD_RELEASE: false
-  # SSH调试开关
-  SSH_DEBUG: true
+  # SSH调试开关-据说会封号
+  # SSH_DEBUG: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -90,10 +85,10 @@ jobs:
         $GITHUB_WORKSPACE/$DIY_P2_SH
 
     # ========== 新增SSH远程连接步骤 ==========
-    - name: SSH Interactive Debug
-      uses: mxschmitt/action-tmate@v3
-      if: env.SSH_DEBUG == 'true'
-      timeout-minutes: 30
+    #- name: SSH Interactive Debug
+    #  uses: mxschmitt/action-tmate@v3
+    #  if: env.SSH_DEBUG == 'true'
+    #  timeout-minutes: 30
     # ========== 新增SSH远程连接步骤 ==========
 
     - name: Download package
