@@ -19,20 +19,21 @@
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
 ###########################################################################
+
 echo "============================================="
 echo "           EEPROM 配置检测脚本（仅观测）"
 echo "============================================="
 
-## 1. 查找驱动内 MT7981_*EEPROM.bin 文件
+## 1. 查找驱动内置 MT7981_*EEPROM.bin
 EEPROM_FILES=$(find ./feeds/mtk/mtwifi -type f -name "MT7981_*EEPROM.bin")
 if [ -n "$EEPROM_FILES" ]; then
     echo -e "\n✅ 找到驱动内置EEPROM文件："
     echo "$EEPROM_FILES"
 else
-    echo -e "\n⚠️ 未在 feeds/mtk/mtwifi 找到 MT7981_*EEPROM.bin"
+    echo -e "\nℹ️ 未在 feeds/mtk/mtwifi 找到 MT7981_*EEPROM.bin"
 fi
 
-## 2. 查找包含 EEPROM_FROM_FILE 宏的头文件
+## 2. 查找 EEPROM_FROM_FILE 宏定义头文件
 HEADER=$(find ./feeds/mtk/mtwifi -type f -name "*.h" | xargs grep -l "EEPROM_FROM_FILE" 2>/dev/null | head -n1)
 
 if [ -n "$HEADER" ]; then
@@ -41,11 +42,12 @@ if [ -n "$HEADER" ]; then
     grep "EEPROM_FROM_FILE" "$HEADER"
 else
     echo -e "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "⚠️ WARNING: 源码中未检索到 EEPROM_FROM_FILE 宏！"
-    echo "文件优先加载EEPROM的补丁无法使用！"
+    echo "⚠️ 未检索到 EEPROM_FROM_FILE 宏！无法切换文件EEPROM优先模式"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    # 生成Action面板可看见的警告标记
+    echo "::warning::源码未找到EEPROM_FROM_FILE宏，文件优先EEPROM方案失效"
 fi
 
 echo -e "\n============================================="
-echo "检测完成，脚本仅打印信息，未修改任何文件"
+echo "检测完成，脚本仅打印信息，未修改任何源码文件"
 echo "============================================="
