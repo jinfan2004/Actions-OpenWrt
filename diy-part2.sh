@@ -18,3 +18,8 @@
 
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
+###########################################################################
+# 【编译 360T7】保持下面这一行注释状态！！
+# 【编译 RAX3000M】删掉行首 # 启用这条sed，开启EEPROM_FROM_FILE=1
+###########################################################################
+#sed -i 's/#define EEPROM_FROM_FILE 0/#define EEPROM_FROM_FILE 1/' package/mtk/mtwifi/src/platform/mt7981/include/mt_platform.h
