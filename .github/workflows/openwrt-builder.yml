@@ -83,10 +83,6 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
-        # ===== 360T7专用 删除不兼容EEPROM模板，编译RAX3000M请注释下面两行 =====
-        rm -f feeds/mtk/mtwifi/MT7981_*EEPROM.bin
-        rm -rf files/lib/firmware
-        #====================================================================
         
     # ========== 新增SSH远程连接步骤 ==========
     #- name: SSH Interactive Debug
