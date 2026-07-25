@@ -19,7 +19,33 @@
 # Modify hostname
 #sed -i 's/OpenWrt/P3TERX-Router/g' package/base-files/files/bin/config_generate
 ###########################################################################
-# 【编译 360T7】保持下面这一行注释状态！！
-# 【编译 RAX3000M】删掉行首 # 启用这条sed，开启EEPROM_FROM_FILE=1
-###########################################################################
-#sed -i 's/#define EEPROM_FROM_FILE 0/#define EEPROM_FROM_FILE 1/' package/mtk/mtwifi/src/platform/mt7981/include/mt_platform.h
+echo "============================================="
+echo "           EEPROM 配置检测脚本（仅观测）"
+echo "============================================="
+
+## 1. 查找驱动内 MT7981_*EEPROM.bin 文件
+EEPROM_FILES=$(find ./feeds/mtk/mtwifi -type f -name "MT7981_*EEPROM.bin")
+if [ -n "$EEPROM_FILES" ]; then
+    echo -e "\n✅ 找到驱动内置EEPROM文件："
+    echo "$EEPROM_FILES"
+else
+    echo -e "\n⚠️ 未在 feeds/mtk/mtwifi 找到 MT7981_*EEPROM.bin"
+fi
+
+## 2. 查找包含 EEPROM_FROM_FILE 宏的头文件
+HEADER=$(find ./feeds/mtk/mtwifi -type f -name "*.h" | xargs grep -l "EEPROM_FROM_FILE" 2>/dev/null | head -n1)
+
+if [ -n "$HEADER" ]; then
+    echo -e "\n✅ 找到宏定义头文件：$HEADER"
+    echo "当前宏定义内容："
+    grep "EEPROM_FROM_FILE" "$HEADER"
+else
+    echo -e "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "⚠️ WARNING: 源码中未检索到 EEPROM_FROM_FILE 宏！"
+    echo "文件优先加载EEPROM的补丁无法使用！"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+fi
+
+echo -e "\n============================================="
+echo "检测完成，脚本仅打印信息，未修改任何文件"
+echo "============================================="
