@@ -82,7 +82,9 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        $GITHUB_WORKSPACE/$DIY_P2_SH
+        # 提前执行注释，此时feeds不存在，检测无效
+
+        #$GITHUB_WORKSPACE/$DIY_P2_SH
         
     # ========== 新增SSH远程连接步骤 ==========
     #- name: SSH Interactive Debug
@@ -96,6 +98,12 @@ jobs:
       run: |
         cd openwrt
         make defconfig
+
+        # 运行EEPROM观测检测脚本
+        echo "========== EEPROM状态检测启动 =========="
+        $GITHUB_WORKSPACE/$DIY_P2_SH
+        echo "========== EEPROM状态检测结束 =========="
+        
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
