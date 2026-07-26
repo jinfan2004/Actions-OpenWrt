@@ -23,29 +23,27 @@ echo "============================================="
 echo "           EEPROM 配置检测脚本（仅观测）"
 echo "============================================="
 
-## 1. 在正确路径查找 MT7981_*EEPROM.bin
-EEPROM_FILES=$(find ./package/mtk/drivers/mt_wifi -type f -name "MT7981_*EEPROM.bin")
+## 全局搜索所有目录（包含build_dir解压出来的驱动源码）
+EEPROM_FILES=$(find . -type f -name "MT7981_*EEPROM.bin" 2>/dev/null)
 if [ -n "$EEPROM_FILES" ]; then
-    echo -e "\n✅ 找到驱动内置EEPROM文件："
+    echo -e "\n✅ 找到 MT7981 EEPROM 模板文件："
     echo "$EEPROM_FILES"
 else
-    echo -e "\nℹ️ 未找到 MT7981_*EEPROM.bin"
+    echo -e "\nℹ️ 全目录未检索到 MT7981_*EEPROM.bin"
 fi
 
-## 2. 全局搜索宏（不再限定feeds，在package/mtk范围搜索）
-HEADER=$(find ./package/mtk -type f -name "*.h" | xargs grep -l "EEPROM_FROM_FILE" 2>/dev/null | head -n1)
-
+## 全局搜索宏，所有.h文件
+HEADER=$(find . -type f -name "*.h" | xargs grep -l "EEPROM_FROM_FILE" 2>/dev/null | head -n1)
 if [ -n "$HEADER" ]; then
-    echo -e "\n✅ 找到宏定义头文件：$HEADER"
-    echo "当前宏定义内容："
+    echo -e "\n✅ 找到 EEPROM_FROM_FILE 头文件：$HEADER"
     grep "EEPROM_FROM_FILE" "$HEADER"
 else
     echo -e "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "⚠️ 未检索到 EEPROM_FROM_FILE 宏！无法切换文件EEPROM优先模式"
+    echo "⚠️ 未检索到 EEPROM_FROM_FILE 宏！文件优先EEPROM方案不可用"
     echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "::warning::源码未找到EEPROM_FROM_FILE宏，文件优先EEPROM方案失效"
+    echo "::warning::源码未找到EEPROM_FROM_FILE宏，无法启用固件内置EEPROM优先加载"
 fi
 
 echo -e "\n============================================="
-echo "检测完成，脚本仅打印信息，未修改任何源码文件"
+echo "检测结束，仅打印日志，未修改任何文件"
 echo "============================================="
