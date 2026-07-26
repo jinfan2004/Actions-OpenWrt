@@ -28,10 +28,7 @@ env:
   DIY_P2_SH: diy-part2.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
-  # 编译完成自动打Release发布，需要令牌否则报错
   UPLOAD_RELEASE: false
-  # SSH调试开关-据说会封号
-  # SSH_DEBUG: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -82,16 +79,7 @@ jobs:
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         chmod +x $DIY_P2_SH
         cd openwrt
-        # 提前执行注释，此时feeds不存在，检测无效
-
-        #$GITHUB_WORKSPACE/$DIY_P2_SH
-        
-    # ========== 新增SSH远程连接步骤 ==========
-    #- name: SSH Interactive Debug
-    #  uses: mxschmitt/action-tmate@v3
-    #  if: env.SSH_DEBUG == 'true'
-    #  timeout-minutes: 30
-    # ========== 新增SSH远程连接步骤 ==========
+        $GITHUB_WORKSPACE/$DIY_P2_SH
 
     - name: Download package
       id: package
@@ -108,13 +96,6 @@ jobs:
         cd openwrt
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 || make -j1 V=s
-
-
-        # 运行EEPROM观测检测脚本
-        echo "========== EEPROM状态检测启动 =========="
-        $GITHUB_WORKSPACE/$DIY_P2_SH
-        echo "========== EEPROM状态检测结束 =========="
-        
         echo "status=success" >> $GITHUB_OUTPUT
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
