@@ -116,9 +116,20 @@ jobs:
       id: organize
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
-        cd openwrt/bin/targets/*/*
-        rm -rf packages
-        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        cd openwrt
+        TARGET_PATH=$(ls -d bin/targets/*/* | head -n1)
+        # 删除内核ipk文件夹，彻底丢弃内核ipk
+        rm -rf $TARGET_PATH/packages
+        echo "FIRMWARE=$TARGET_PATH" >> $GITHUB_ENV
+
+        PLUGIN_IPK_DIR=bin/packages
+        echo "PLUGIN_IPK_DIR=$PLUGIN_IPK_DIR" >> $GITHUB_ENV
+
+        echo "===== M编译插件IPK统计 ====="
+        echo "插件IPK总数：$(find $PLUGIN_IPK_DIR -name "*.ipk" | wc -l)"
+        find $PLUGIN_IPK_DIR -name "*.ipk"
+        echo "============================"
+
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
@@ -126,7 +137,9 @@ jobs:
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
-        path: ${{ env.FIRMWARE }}
+        path: |
+          ${{ env.FIRMWARE }}
+          openwrt/${{ env.PLUGIN_IPK_DIR }}
 
     - name: Generate release tag
       id: tag
