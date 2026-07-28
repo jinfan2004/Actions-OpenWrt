@@ -85,7 +85,7 @@ jobs:
       id: package
       run: |
         cd openwrt
-        make defconfig        
+        make defconfig
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -117,11 +117,8 @@ jobs:
       if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       run: |
         cd openwrt/bin/targets/*/*
-        # 注释删除packages命令，保留编译生成的ipk安装包
-        #rm -rf packages
+        rm -rf packages
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        # 打印ipk数量，方便校验
-        echo "当前目录IPK数量：$(find packages -name "*.ipk" | wc -l)"
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
